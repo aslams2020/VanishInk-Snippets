@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart } from 'react-icons/fa';
 import './App.css';
 
 function App() {
@@ -208,6 +208,24 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-text">
+            <p>© 2025 VanishInk. All rights reserved | Made with <FaHeart className="heart-icon" /> by Aslam</p>
+          </div>
+          <div className="footer-links">
+            <a href="https://www.linkedin.com/in/aslamsayyad02/" target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+            <span className="separator">|</span>
+            <a href="https://github.com/aslams2020" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
