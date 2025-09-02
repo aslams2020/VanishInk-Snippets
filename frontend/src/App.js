@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt } from 'react-icons/fa';
 import './App.css';
 
 function App() {
-
   const [view, setView] = useState('create');
   const [vanishId, setVanishId] = useState('');
-
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [expiryTime, setExpiryTime] = useState('1h');
+  const [createdUrl, setCreatedUrl] = useState('');
+  const [vanishData, setVanishData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const path = window.location.pathname;
-
     if (path !== '/') {
       const id = path.substring(1);
       setVanishId(id);
@@ -20,51 +25,31 @@ function App() {
     }
   }, []);
 
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [expiryTime, setExpiryTime] = useState('1h');
-  const [createdUrl, setCreatedUrl] = useState('');
-
-  const [vanishData, setVanishData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
       const response = await fetch('http://localhost:8080/api/vanish', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          expiryTime,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, expiryTime }),
       });
 
       if (response.ok) {
         const data = await response.json();
-
         const vanishId = data.url;
         const userFriendlyUrl = `${window.location.origin}/${vanishId}`;
         setCreatedUrl(userFriendlyUrl);
-
         setTitle('');
         setContent('');
         setExpiryTime('1h');
       } else {
         setError('Failed to create the Vanish.');
       }
-    } 
-    catch (err) {
+    } catch (err) {
       setError('An error occurred. Is the backend server running?');
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -89,102 +74,142 @@ function App() {
     }
   };
 
-  
   const copyToClipboard = () => {
     navigator.clipboard.writeText(createdUrl);
     alert('URL copied to clipboard!');
   };
 
-  if (view === 'create') {
-    return (
-      <div className="app-container">
-        <h1>VanishInk</h1>
-        <p>Create a shareable link for your text or code that vanishes after a set time.</p>
+  return (
+    <div className="app">
+      {/* Navigation Bar */}
+      <nav className="navbar">
+        <div className="nav-brand">
+          <h2>VanishInk</h2>
+        </div>
+        <div className="nav-links">
+          <a href="https://github.com/aslams2020/VanishInk-Snippets" target="_blank" rel="noopener noreferrer">
+            <FaGithub className="nav-icon" />
+          </a>
+          <a href="mailto:sayyadaslam2020@gmail.com">
+            <FaEnvelope className="nav-icon" />
+          </a>
+          <a href="/about" className="nav-span">
+            About
+          </a>
+        </div>
+      </nav>
 
-        <form onSubmit={handleSubmit} className="create-form">
-          <div className="form-group">
-            <label htmlFor="title">Title (Optional)</label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter a title..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="content">Content</label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Paste your text or code here..."
-              required
-              rows="10"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="expiryTime">Expires After</label>
-            <select
-              id="expiryTime"
-              value={expiryTime}
-              onChange={(e) => setExpiryTime(e.target.value)}
-            >
-              <option value="1h">1 Hour</option>
-              <option value="1d">1 Day</option>
-              <option value="1w">1 Week</option>
-              <option value="never">Never</option>
-            </select>
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Vanish'}
-          </button>
-        </form>
-
-        {error && <p className="error-message">{error}</p>}
-
-        {createdUrl && (
-          <div className="result-container">
-            <p>Your Vanish has been created!</p>
-            <div className="url-container">
-              <input type="text" value={createdUrl} readOnly />
-              <button onClick={copyToClipboard}>Copy URL</button>
+      {/* Main Content */}
+      <div className="main-container">
+        {view === 'create' ? (
+          <div className="create-container">
+            <div className="hero-section">
+              <h1>Share Code. Vanish Forever.</h1>
+              <p>Create secure, temporary links for your code snippets that automatically disappear.</p>
             </div>
-            <p>Share this URL with anyone. They will be able to view it until it expires.</p>
-          </div>
-        )}
-      </div>
-    );
-  }
+            <form onSubmit={handleSubmit} className="create-form">
+              <div className="form-group">
+                <label htmlFor="title" className="form-label">Title</label>
+                <input
+                  id="title"
+                  type="text"
+                  className="form-input"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Add a title (optional)"
+                />
+              </div>
 
-  // RENDER THE VIEW VIEW
-  if (view === 'view') {
-    return (
-      <div className="app-container">
-        {loading && <p>Loading...</p>}
-        {error && <p className="error-message">{error}</p>}
+              <div className="form-group">
+                <label htmlFor="content" className="form-label">Content</label>
+                <textarea
+                  id="content"
+                  className="form-textarea"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Paste your code or text here..."
+                  required
+                  rows="8"
+                />
+              </div>
 
-        {vanishData && (
-          <div className="vanish-container">
-            <h1>{vanishData.title || 'Untitled Vanish'}</h1>
-            <p>Created on: {new Date(vanishData.createdAt).toLocaleString()}</p>
-            {vanishData.expiresAt && (
-              <p>Expires on: {new Date(vanishData.expiresAt).toLocaleString()}</p>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="expiryTime" className="form-label">Expiry Time</label>
+                  <select
+                    id="expiryTime"
+                    className="form-select"
+                    value={expiryTime}
+                    onChange={(e) => setExpiryTime(e.target.value)}
+                  >
+                    <option value="1h">1 Hour</option>
+                    <option value="1d">1 Day</option>
+                    <option value="1w">1 Week</option>
+                    <option value="never">Never</option>
+                  </select>
+                </div>
+
+                <button type="submit" className="create-btn" disabled={loading}>
+                  {loading ? 'Creating...' : 'Create Vanish Link'}
+                </button>
+              </div>
+            </form>
+
+
+            {error && <div className="error-message">{error}</div>}
+
+            {createdUrl && (
+              <div className="result-container">
+                <h3>Your Vanish Link is Ready!</h3>
+                <div className="url-box">
+                  <input type="text" value={createdUrl} readOnly className="url-input" />
+                  <button onClick={copyToClipboard} className="copy-btn">
+                    <FaCopy /> Copy
+                  </button>
+                </div>
+                <p className="url-note">Share this link. It will expire based on your chosen duration.</p>
+              </div>
             )}
-            <div className="content-display">
-              <SyntaxHighlighter language="java" style={dark}>
-                {vanishData.content}
-              </SyntaxHighlighter>
-            </div>
-            
+          </div>
+        ) : (
+          <div className="view-container">
+            {loading && <div className="loading">Loading...</div>}
+            {error && <div className="error-message">{error}</div>}
+
+            {vanishData && (
+              <div className="vanish-card">
+                <div className="card-header">
+                  <h1>{vanishData.title || 'Untitled Vanish'}</h1>
+                  <div className="meta-info">
+                    <span className="meta-item">
+                      <FaCalendarAlt className="meta-icon" />
+                      Created: {new Date(vanishData.createdAt).toLocaleString()}
+                    </span>
+                    {vanishData.expiresAt && (
+                      <span className="meta-item">
+                        <FaClock className="meta-icon" />
+                        Expires: {new Date(vanishData.expiresAt).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="code-container">
+                  <SyntaxHighlighter
+                    language="java"
+                    style={vscDarkPlus}
+                    customStyle={{ borderRadius: '8px', padding: '20px' }}
+                  >
+                    {vanishData.content}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
