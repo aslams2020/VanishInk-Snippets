@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +34,17 @@ public class Vanish {
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
+    
+    public enum ContentType {
+        TEXT, IMAGE, FILE
+    }
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "content_type")
+    private ContentType contentType = ContentType.TEXT; // Default to TEXT
+
+    @Column(name = "file_url")
+    private String fileUrl; 
 
 
     public Long getId() {
@@ -70,9 +83,21 @@ public class Vanish {
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
-
-
-    // () runs to set the createdAt time and generate the unique vanishId.
+    
+    public ContentType getContentType() {
+		return contentType;
+	}
+	public void setContentType(ContentType contentType) {
+		this.contentType = contentType;
+	}
+	public String getFileUrl() {
+		return fileUrl;
+	}
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+	
+	// () runs to set the createdAt time and generate the unique vanishId.
     // Right before a new Vanish object is saved for the first time...
     @PrePersist
     protected void onCreate() {
