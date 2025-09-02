@@ -8,6 +8,7 @@ function App() {
   const [view, setView] = useState('create');
   const [vanishId, setVanishId] = useState('');
 
+
   useEffect(() => {
     const path = window.location.pathname;
 
