@@ -1,19 +1,24 @@
 package in.sb.vink.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import in.sb.vink.model.Vanish;
+import in.sb.vink.service.FileUploadService;
 import in.sb.vink.service.VanishService;
 
 @RestController
@@ -22,23 +27,73 @@ public class VanishController {
 
 	@Autowired
 	private VanishService vanishService;
+	
+	@Autowired
+    private FileUploadService fileUploadService;
 
-	@PostMapping
-    public ResponseEntity<VanishResponse> createVanish(@RequestBody VanishRequest vanishRequest) {
+//	@PostMapping
+//    public ResponseEntity<VanishResponse> createVanish(@RequestBody VanishRequest vanishRequest) {
+//
+//        Vanish vanish = new Vanish();
+//        vanish.setContent(vanishRequest.getContent());
+//        vanish.setTitle(vanishRequest.getTitle());
+//
+//        if (vanishRequest.getExpiryTime() != null) {
+//            vanish.setExpiresAt(calculateExpiryTime(vanishRequest.getExpiryTime()));
+//        }
+//
+//        Vanish savedVanish = vanishService.createVanish(vanish);
+////        VanishResponse response = new VanishResponse("http://localhost:8080/api/vanish/" + savedVanish.getVanishId());
+//        VanishResponse response = new VanishResponse(savedVanish.getVanishId());
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
+	
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<VanishResponse> createVanish(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "content", required = false) String textContent,
+            @RequestParam(value = "expiryTime", required = false) String expiryTime,
+            @RequestParam(value = "file", required = false) MultipartFile file) { 
 
-        Vanish vanish = new Vanish();
-        vanish.setContent(vanishRequest.getContent());
-        vanish.setTitle(vanishRequest.getTitle());
+        try {
+            Vanish vanish = new Vanish();
+            vanish.setTitle(title);
 
-        if (vanishRequest.getExpiryTime() != null) {
-            vanish.setExpiresAt(calculateExpiryTime(vanishRequest.getExpiryTime()));
+            if (file != null && !file.isEmpty()) {
+                // This is a FILE/IMAGE upload
+                String fileUrl = fileUploadService.uploadFile(file);
+                vanish.setFileUrl(fileUrl);
+
+                
+                if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
+                    vanish.setContentType(Vanish.ContentType.IMAGE);
+                } else {
+                    vanish.setContentType(Vanish.ContentType.FILE);
+                }
+                vanish.setContent(file.getOriginalFilename());
+
+            } else if (textContent != null && !textContent.trim().isEmpty()) {
+                // This is TEXT/CODE
+                vanish.setContentType(Vanish.ContentType.TEXT);
+                vanish.setContent(textContent);
+            } else {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            // Handle expiration
+            if (expiryTime != null) {
+                vanish.setExpiresAt(calculateExpiryTime(expiryTime));
+            }
+
+            Vanish savedVanish = vanishService.createVanish(vanish);
+            VanishResponse response = new VanishResponse(savedVanish.getVanishId()); // Return just the ID
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        Vanish savedVanish = vanishService.createVanish(vanish);
-//        VanishResponse response = new VanishResponse("http://localhost:8080/api/vanish/" + savedVanish.getVanishId());
-        VanishResponse response = new VanishResponse(savedVanish.getVanishId());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+	
 	
 	@GetMapping("/{vanishId}") 
     public ResponseEntity<Vanish> getVanishById(@PathVariable String vanishId) {
