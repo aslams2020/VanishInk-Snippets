@@ -63,8 +63,7 @@ Built with a **React frontend** and a robust **Spring Boot backend**, VanishInk 
 ### Backend (Spring Boot + MySQL)  
 ```bash
 # Clone repo
-git clone https://github.com/your-username/vanishink-backend.git
-cd vanishink-backend
+git clone https://github.com/aslams2020/vanishink-snippets.git
 
 # Configure database in application.properties
 spring.datasource.url=jdbc:mysql://localhost:3306/vanishink
@@ -74,3 +73,16 @@ spring.datasource.password=YOUR_DB_PASS
 # Run backend
 mvn spring-boot:run
 ```
+### Frontend (React.js)
+```bash
+# Clone repo
+git clone https://github.com/aslams2020/vanishink-snippets.git
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
