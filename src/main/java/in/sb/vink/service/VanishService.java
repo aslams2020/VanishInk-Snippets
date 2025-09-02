@@ -25,20 +25,14 @@ public class VanishService {
         return vanishRepository.findByVanishId(vanishId);
     }
 
-//    @Scheduled(cron = "0 0 2 * * ?") // Run every day at 2 AM
-//    public void cleanupExpiredVanishes() {
-//        System.out.println("Running scheduled task: Cleaning up expired vanishes...");
-//        try {
-//            vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());
-//        } catch (Exception e) {
-//            System.err.println("Error during cleanup: " + e.getMessage());
-//        }
-//    }
-    
-    @Scheduled(fixedRate = 120000) // Run every 2 minutes for testing
-    @Transactional
+    @Scheduled(cron = "0 0 2 * * ?") // Run every day at 2 AM
     public void cleanupExpiredVanishes() {
-        System.out.println("[" + LocalDateTime.now() + "] Running scheduled task: Cleaning up expired vanishes...");
-        vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());
+        System.out.println("Running scheduled task: Cleaning up expired vanishes...");
+        try {
+            vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());
+        } catch (Exception e) {
+            System.err.println("Error during cleanup: " + e.getMessage());
+        }
     }
+    
 }
