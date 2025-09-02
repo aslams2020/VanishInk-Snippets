@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart } from 'react-icons/fa';
+import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart, FaFileAlt, FaDownload, FaExternalLinkAlt, FaFile} from 'react-icons/fa';
 import './App.css';
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
   const [vanishData, setVanishData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -29,11 +30,21 @@ function App() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('expiryTime', expiryTime);
+
+    if (file) {
+      formData.append('file', file); // Append the file
+    } else {
+      formData.append('content', content); // Append text content
+    }
+
     try {
       const response = await fetch('http://localhost:8080/api/vanish', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, expiryTime }),
+        body: formData,
       });
 
       if (response.ok) {
@@ -44,6 +55,7 @@ function App() {
         setTitle('');
         setContent('');
         setExpiryTime('1h');
+        setFile(null);
       } else {
         setError('Failed to create the Vanish.');
       }
@@ -77,6 +89,14 @@ function App() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(createdUrl);
     alert('URL copied to clipboard!');
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      setContent(''); // Clear text content when file is selected
+    }
   };
 
   return (
@@ -119,22 +139,48 @@ function App() {
                   placeholder="Add a title (optional)"
                 />
               </div>
-
+              
               <div className="form-group">
-                <label htmlFor="content" className="form-label">Content</label>
-                <textarea
-                  id="content"
-                  className="form-textarea"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Paste your code or text here..."
-                  required
-                  rows="8"
-                />
+                <label htmlFor="file" className="form-label">Or Upload a File/Image</label>
+                <div className="file-input-container">
+                  <input
+                    type="file"
+                    id="file"
+                    onChange={handleFileChange}
+                    className="file-input"
+                  />
+                  <label htmlFor="file" className="file-input-label">
+                    <FaFileAlt className="file-input-icon" />
+                    {file ? file.name : 'Choose a file'}
+                  </label>
+                </div>
+                {file && (
+                  <button 
+                    type="button" 
+                    className="clear-file-btn"
+                    onClick={() => setFile(null)}
+                  >
+                    Remove File
+                  </button>
+                )}
               </div>
+              
+              {!file && (
+                <div className="form-group">
+                  <label htmlFor="content" className="form-label">Content</label>
+                  <textarea
+                    id="content"
+                    className="form-textarea"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Paste your text or code here..."
+                    rows="7"
+                  />
+                </div>
+              )}
 
               <div className="form-row">
-                <div className="form-group">
+                <div className="form-group expiry-group">
                   <label htmlFor="expiryTime" className="form-label">Expiry Time</label>
                   <select
                     id="expiryTime"
@@ -154,7 +200,6 @@ function App() {
                 </button>
               </div>
             </form>
-
 
             {error && <div className="error-message">{error}</div>}
 
@@ -191,17 +236,78 @@ function App() {
                         Expires: {new Date(vanishData.expiresAt).toLocaleString()}
                       </span>
                     )}
+                    <span className="meta-item type-badge">
+                      <FaFileAlt className="meta-icon" />
+                      Type: {vanishData.contentType?.toLowerCase() || 'text'}
+                    </span>
                   </div>
                 </div>
 
-                <div className="code-container">
-                  <SyntaxHighlighter
-                    language="java"
-                    style={vscDarkPlus}
-                    customStyle={{ borderRadius: '8px', padding: '20px' }}
-                  >
-                    {vanishData.content}
-                  </SyntaxHighlighter>
+                <div className="content-container">
+                  {/* TEXT Content */}
+                  {(!vanishData.contentType || vanishData.contentType === 'TEXT') && (
+                    <div className="text-content">
+                      <SyntaxHighlighter
+                        language="java"
+                        style={vscDarkPlus}
+                        customStyle={{ borderRadius: '8px', padding: '20px' }}
+                      >
+                        {vanishData.content}
+                      </SyntaxHighlighter>
+                    </div>
+                  )}
+
+                  {/* IMAGE Content */}
+                  {vanishData.contentType === 'IMAGE' && (
+                    <div className="image-content">
+                      <div className="image-wrapper">
+                        <img
+                          src={vanishData.fileUrl}
+                          alt={vanishData.title || 'VanishInk Image'}
+                          className="uploaded-image"
+                        />
+                      </div>
+                      <div className="content-actions">
+                        <a
+                          href={vanishData.fileUrl}
+                          download
+                          className="action-btn primary"
+                        >
+                          <FaDownload /> Download Image
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* FILE Content */}
+                  {vanishData.contentType === 'FILE' && (
+                    <div className="file-content">
+                      <div className="file-info">
+                        <FaFile className="file-icon" />
+                        <div className="file-details">
+                          <h3>{vanishData.originalFileName || 'Download File'}</h3>
+                          <p>File shared via VanishInk</p>
+                        </div>
+                      </div>
+                      <div className="content-actions">
+                        <a
+                          href={vanishData.fileUrl}
+                          download
+                          className="action-btn primary"
+                        >
+                          <FaDownload /> Download File
+                        </a>
+                        <a
+                          href={vanishData.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="action-btn secondary"
+                        >
+                          <FaExternalLinkAlt /> Open in New Tab
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
