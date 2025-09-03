@@ -49,64 +49,76 @@ public class VanishController {
 //    }
 	
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<VanishResponse> createVanish(
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "content", required = false) String textContent,
-            @RequestParam(value = "expiryTime", required = false) String expiryTime,
-            @RequestParam(value = "file", required = false) MultipartFile file) { 
+	public ResponseEntity<VanishResponse> createVanish(
+	        @RequestParam(value = "title", required = false) String title,
+	        @RequestParam(value = "content", required = false) String textContent,
+	        @RequestParam(value = "expiryTime", required = false) String expiryTime,
+	        @RequestParam(value = "isOneTime", required = false) Boolean isOneTime, 
+	        @RequestParam(value = "file", required = false) MultipartFile file) {
 
-        try {
-            Vanish vanish = new Vanish();
-            vanish.setTitle(title);
+	    try {
+	        Vanish vanish = new Vanish();
+	        vanish.setTitle(title); 
 
-            if (file != null && !file.isEmpty()) {
-                // This is a FILE/IMAGE upload
-                String fileUrl = fileUploadService.uploadFile(file);
-                vanish.setFileUrl(fileUrl);
+	        vanish.setIsOneTime(Boolean.TRUE.equals(isOneTime)); // <-- NEW LOGIC
 
-                
-                if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
-                    vanish.setContentType(Vanish.ContentType.IMAGE);
-                } else {
-                    vanish.setContentType(Vanish.ContentType.FILE);
-                }
-                vanish.setContent(file.getOriginalFilename());
+	        if (file != null && !file.isEmpty()) {
+	            // FILE/IMAGE upload
+	            String fileUrl = fileUploadService.uploadFile(file);
+	            vanish.setFileUrl(fileUrl);
 
-            } else if (textContent != null && !textContent.trim().isEmpty()) {
-                // This is TEXT/CODE
-                vanish.setContentType(Vanish.ContentType.TEXT);
-                vanish.setContent(textContent);
-            } else {
-                return ResponseEntity.badRequest().body(null);
-            }
+	            if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
+	                vanish.setContentType(Vanish.ContentType.IMAGE);
+	            } else {
+	                vanish.setContentType(Vanish.ContentType.FILE);
+	            }
+	            vanish.setContent(file.getOriginalFilename());
 
-            // Handle expiration
-            if (expiryTime != null) {
-                vanish.setExpiresAt(calculateExpiryTime(expiryTime));
-            }
+	        } else if (textContent != null && !textContent.trim().isEmpty()) {
+	            // This is TEXT/CODE
+	            vanish.setContentType(Vanish.ContentType.TEXT);
+	            vanish.setContent(textContent);
+	        } else {
+	            return ResponseEntity.badRequest().body(null);
+	        }
 
-            Vanish savedVanish = vanishService.createVanish(vanish);
-            VanishResponse response = new VanishResponse(savedVanish.getVanishId()); // Return just the ID
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+	        // expiration
+	        if (expiryTime != null) {
+	            vanish.setExpiresAt(calculateExpiryTime(expiryTime));
+	        }
 
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+	        Vanish savedVanish = vanishService.createVanish(vanish);
+	        VanishResponse response = new VanishResponse(savedVanish.getVanishId()); // Return just the ID
+	        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+	    } catch (IOException e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    }
+	}
 	
 	
-	@GetMapping("/{vanishId}") 
-    public ResponseEntity<Vanish> getVanishById(@PathVariable String vanishId) {
-       
-        Optional<Vanish> vanish = vanishService.getVanishByVanishId(vanishId);
+	@GetMapping("/{vanishId}")
+	public ResponseEntity<?> getVanishById(@PathVariable String vanishId) {
+	    Optional<Vanish> vanishOpt = vanishService.getVanishByVanishId(vanishId);
 
-        if (vanish.isPresent()) {
-            return new ResponseEntity<>(vanish.get(), HttpStatus.OK);
-        } else {
-            // If not found, return 404 (NOT FOUND)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+	    // If not found, return 404 (NOT FOUND)
+	    if (vanishOpt.isEmpty()) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
+
+	    Vanish vanish = vanishOpt.get();
+
+	    // Check if it's a one-time paste
+	    if (Boolean.TRUE.equals(vanish.getIsOneTime())) {
+	        try {
+	            vanishService.deleteVanishById(vanish.getId());
+	        } catch (Exception e) {
+	            System.err.println("Error deleting one-time vanish: " + e.getMessage());
+	        }
+	    }
+
+	    return new ResponseEntity<>(vanish, HttpStatus.OK);
+	}
 
 	private LocalDateTime calculateExpiryTime(String expiryTime) {
 
@@ -144,7 +156,8 @@ public class VanishController {
         private String title;
         private String content;
         private String expiryTime; //"1h", "1d", "1w", "never"
-
+        private Boolean isOneTime; 
+        
         public String getTitle() {
             return title;
         }
@@ -167,6 +180,14 @@ public class VanishController {
 
         public void setExpiryTime(String expiryTime) {
             this.expiryTime = expiryTime;
+        }
+        
+        public Boolean getIsOneTime() {
+            return isOneTime;
+        }
+        
+        public void setIsOneTime(Boolean isOneTime) {
+            this.isOneTime = isOneTime;
         }
     }
 
