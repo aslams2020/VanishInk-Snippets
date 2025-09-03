@@ -222,6 +222,36 @@ body {
   flex: 1;
 }
 
+/* Checkbox */
+.checkbox-group {
+  margin-bottom: 1.5rem;
+  margin-top: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #3e3e3f;
+  
+}
+
+.checkbox-input {
+  margin-right: 0.75rem;
+  width: 18px;
+  margin-top: 3px;
+  height: 18px;
+  accent-color: #9b59b6; 
+}
+
+.checkbox-description {
+  margin: 0.5rem 0 0 2rem;
+  font-size: 0.9rem;
+  color: #711d8b;
+  font-style: italic;
+}
+
 /* Buttons */
 .create-btn {
   padding: 1rem 2rem;
