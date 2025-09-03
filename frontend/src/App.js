@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart, FaFileAlt, FaDownload, FaExternalLinkAlt, FaFile} from 'react-icons/fa';
+import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart, FaFileAlt, FaDownload, FaExternalLinkAlt, FaFile } from 'react-icons/fa';
 import './App.css';
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
+  const [isOneTime, setIsOneTime] = useState(false);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -34,6 +35,7 @@ function App() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('expiryTime', expiryTime);
+    formData.append('isOneTime', isOneTime); 
 
     if (file) {
       formData.append('file', file); // Append the file
@@ -139,7 +141,7 @@ function App() {
                   placeholder="Add a title (optional)"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="file" className="form-label">Or Upload a File/Image</label>
                 <div className="file-input-container">
@@ -155,8 +157,8 @@ function App() {
                   </label>
                 </div>
                 {file && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="clear-file-btn"
                     onClick={() => setFile(null)}
                   >
@@ -164,7 +166,7 @@ function App() {
                   </button>
                 )}
               </div>
-              
+
               {!file && (
                 <div className="form-group">
                   <label htmlFor="content" className="form-label">Content</label>
@@ -199,6 +201,23 @@ function App() {
                   {loading ? 'Creating...' : 'Create Vanish Link'}
                 </button>
               </div>
+              <div className="form-group checkbox-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={isOneTime}
+                    onChange={(e) => setIsOneTime(e.target.checked)}
+                    className="checkbox-input"
+                  />
+                  <span className="checkmark"></span>
+                  Burn after reading (One-Time Link)?
+                </label>
+                <p className="checkbox-description">(Note: This vanish will be destroyed immediately after being viewed once.)</p>
+              </div>
+
+              {/* <button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Vanish Link'}
+              </button> */}
             </form>
 
             {error && <div className="error-message">{error}</div>}
