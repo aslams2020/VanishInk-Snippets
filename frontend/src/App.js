@@ -124,7 +124,7 @@ function App() {
 
       <nav className="navbar">
         <div className="nav-brand">
-          <h2>VanishInk</h2>
+         <a href="/" className='logo-left'><h2>VanishInk</h2></a>
         </div>
         <div className="nav-links">
           <a href="https://github.com/aslams2020/VanishInk-Snippets" target="_blank" rel="noopener noreferrer">

@@ -44,6 +44,11 @@ body {
   font-size: 1.8rem;
 }
 
+.logo-left {
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .nav-links {
   display: flex;
   gap: 1.5rem;
@@ -263,6 +268,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 27px ;
   white-space: nowrap;
   box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
 }
