@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart, FaFileAlt, FaDownload, FaExternalLinkAlt, FaFile } from 'react-icons/fa';
+import { QRCodeSVG } from 'qrcode.react';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
   const [isOneTime, setIsOneTime] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -35,7 +37,7 @@ function App() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('expiryTime', expiryTime);
-    formData.append('isOneTime', isOneTime); 
+    formData.append('isOneTime', isOneTime);
 
     if (file) {
       formData.append('file', file); // Append the file
@@ -54,6 +56,8 @@ function App() {
         const vanishId = data.url;
         const userFriendlyUrl = `${window.location.origin}/${vanishId}`;
         setCreatedUrl(userFriendlyUrl);
+        setShowQr(true);
+
         setTitle('');
         setContent('');
         setExpiryTime('1h');
@@ -138,12 +142,12 @@ function App() {
                   className="form-input"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Add a title (optional)"
+                  placeholder="Add a title to Vanish"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="file" className="form-label">Or Upload a File/Image</label>
+                <label htmlFor="file" className="form-label">Upload a File/Image</label>
                 <div className="file-input-container">
                   <input
                     type="file"
@@ -166,10 +170,9 @@ function App() {
                   </button>
                 )}
               </div>
-
               {!file && (
                 <div className="form-group">
-                  <label htmlFor="content" className="form-label">Content</label>
+                  <label htmlFor="content" className="form-label">Or Content</label>
                   <textarea
                     id="content"
                     className="form-textarea"
@@ -215,9 +218,6 @@ function App() {
                 <p className="checkbox-description">(Note: This vanish will be destroyed immediately after being viewed once.)</p>
               </div>
 
-              {/* <button type="submit" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Vanish Link'}
-              </button> */}
             </form>
 
             {error && <div className="error-message">{error}</div>}
@@ -231,7 +231,26 @@ function App() {
                     <FaCopy /> Copy
                   </button>
                 </div>
+
+                {showQr && (
+                  <div className="qr-section">
+                    <h3>Quick Share QR Code</h3>
+                    <div className="qr-code-container">
+                      <QRCodeSVG 
+                        value={createdUrl}
+                        size={200}
+                        level="H" // High error correction (30%)
+                        includeMargin={true}
+                        fgColor="#2c2c54"
+                        bgColor="#f9f9f9"
+                      />
+                    </div>
+                    <p className="qr-note">Scan this code with any smartphone camera to open the link instantly.</p>
+                  </div>
+                )}
+
                 <p className="url-note">Share this link. It will expire based on your chosen duration.</p>
+
               </div>
             )}
           </div>
