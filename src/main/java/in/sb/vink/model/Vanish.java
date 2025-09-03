@@ -35,6 +35,9 @@ public class Vanish {
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
     
+    @Column(name = "is_one_time")
+    private Boolean isOneTime = false;
+    
     public enum ContentType {
         TEXT, IMAGE, FILE
     }
@@ -97,6 +100,14 @@ public class Vanish {
 		this.fileUrl = fileUrl;
 	}
 	
+	public Boolean getIsOneTime() {
+        return isOneTime;
+    }
+
+    public void setIsOneTime(Boolean isOneTime) {
+        this.isOneTime = isOneTime;
+    }
+    
 	// () runs to set the createdAt time and generate the unique vanishId.
     // Right before a new Vanish object is saved for the first time...
     @PrePersist
