@@ -3,6 +3,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FaGithub, FaEnvelope, FaUser, FaCopy, FaClock, FaCalendarAlt, FaHeart, FaFileAlt, FaDownload, FaExternalLinkAlt, FaFile } from 'react-icons/fa';
 import { QRCodeSVG } from 'qrcode.react';
+import About from './components/About';
 import './App.css';
 
 function App() {
@@ -21,13 +22,26 @@ function App() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    if (path !== '/') {
+    if (path === '/about') {
+      setView('about');
+    } else if (path !== '/') {
       const id = path.substring(1);
       setVanishId(id);
       setView('view');
       fetchVanish(id);
+    } else {
+      setView('create');
     }
   }, []);
+
+  const navigateTo = (path) => {
+    window.history.pushState({}, '', path);
+    if (path === '/about') {
+      setView('about');
+    } else {
+      setView('create');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,7 +121,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* Navigation Bar */}
+
       <nav className="navbar">
         <div className="nav-brand">
           <h2>VanishInk</h2>
@@ -119,15 +133,16 @@ function App() {
           <a href="mailto:sayyadaslam2020@gmail.com">
             <FaEnvelope className="nav-icon" />
           </a>
-          <a href="/about" className="nav-span">
+          <span onClick={() => navigateTo('/about')} className="nav-span" style={{ cursor: 'pointer' }}>
             About
-          </a>
+          </span>
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="main-container">
-        {view === 'create' ? (
+        {view === 'about' ? (
+          <About />
+        ) : view === 'create' ? (
           <div className="create-container">
             <div className="hero-section">
               <h1>Share Code. Vanish Forever.</h1>
@@ -236,7 +251,7 @@ function App() {
                   <div className="qr-section">
                     <h3>Quick Share QR Code</h3>
                     <div className="qr-code-container">
-                      <QRCodeSVG 
+                      <QRCodeSVG
                         value={createdUrl}
                         size={200}
                         level="H" // High error correction (30%)
