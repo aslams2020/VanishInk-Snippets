@@ -35,4 +35,8 @@ public class VanishService {
         }
     }
     
+    public void deleteVanishById(Long id) {
+        vanishRepository.deleteById(id);
+    }
+    
 }
