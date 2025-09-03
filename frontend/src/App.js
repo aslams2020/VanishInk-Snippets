@@ -19,8 +19,6 @@ function App() {
   const [isOneTime, setIsOneTime] = useState(false);
   const [showQr, setShowQr] = useState(false);
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
   useEffect(() => {
     const path = window.location.pathname;
     if (path !== '/') {
@@ -48,7 +46,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/vanish`, {
+      const response = await fetch('http://localhost:8080/api/vanish', {
         method: 'POST',
         body: formData,
       });
@@ -78,7 +76,7 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE_URL}/api/vanish/${id}`);
+      const response = await fetch(`http://localhost:8080/api/vanish/${id}`);
       if (response.ok) {
         const data = await response.json();
         setVanishData(data);
