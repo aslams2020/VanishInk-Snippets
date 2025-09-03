@@ -329,8 +329,9 @@ body {
 }
 
 .url-note {
-  color: #64748B;
+  color: #002279;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* View Container */
@@ -501,6 +502,39 @@ body {
   padding: 3rem;
   color: #64748B;
   font-size: 1.1rem;
+}
+
+/* QR Code  */
+.qr-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #39394d;
+  text-align: center;
+}
+
+.qr-section h3 {
+  color: #9b59b6;
+  margin-bottom: 1rem;
+}
+
+.qr-code-container {
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  display: inline-block;
+  margin: 0.5rem 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.qr-note {
+  color: #850d85;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  margin-bottom: 20px;
+  font-style: italic;
+  /* max-width: 340px; */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Footer */
