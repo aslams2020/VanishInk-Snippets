@@ -257,6 +257,21 @@ body {
   font-style: italic;
 }
 
+.custom-time-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+  /* padding: 1rem; */
+  /* background-color: #f8f9fa; */
+}
+
+@media (max-width: 768px) {
+  .custom-time-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Buttons */
 .create-btn {
   padding: 1rem 2rem;
