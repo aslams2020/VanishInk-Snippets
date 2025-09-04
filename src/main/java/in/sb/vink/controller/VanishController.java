@@ -121,20 +121,35 @@ public class VanishController {
 	}
 
 	private LocalDateTime calculateExpiryTime(String expiryTime) {
-
-        LocalDateTime now = LocalDateTime.now();
-        switch (expiryTime.toLowerCase()) {
-            case "1h":
-                return now.plusHours(1);
-            case "1d":
-                return now.plusDays(1);
-            case "1w":
-                return now.plusWeeks(1);
-            case "never":
-            default:
-                return null; // 'null' means never expire
-        }
-    }
+		
+		if ("never".equals(expiryTime)) {
+	        return null;
+	    }
+		
+	    LocalDateTime now = LocalDateTime.now();
+	    
+		if (expiryTime.matches("\\d+[mhdw]")) {  // custom format (e.g., "30m", "4h", "2d", "3w")
+	        int value = Integer.parseInt(expiryTime.substring(0, expiryTime.length() - 1));
+	        char unit = expiryTime.charAt(expiryTime.length() - 1);
+	        
+	        switch (unit) {
+	            case 'm': return now.plusMinutes(value);
+	            case 'h': return now.plusHours(value);
+	            case 'd': return now.plusDays(value);
+	            case 'w': return now.plusWeeks(value);
+	            default: return now.plusHours(1); // Default to 1 hour
+	        }
+	    }
+	    
+	    // predefined values
+	    switch (expiryTime) {
+	        case "1h": return now.plusHours(1);
+	        case "6h": return now.plusHours(6);
+	        case "1d": return now.plusDays(1);
+	        case "1w": return now.plusWeeks(1);
+	        default: return now.plusHours(1); // Default to 1 hour
+	    }
+	}
 
 	public static class VanishResponse {
         private String url;
