@@ -6,6 +6,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import About from './components/About';
 import './App.css';
 
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:8080' 
+  : 'https://vanishink-snippets.onrender.com';
+
 function App() {
   const [view, setView] = useState('create');
   const [vanishId, setVanishId] = useState('');
@@ -104,7 +108,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('https://vanishink-snippets.onrender.com/api/vanish', {
+      const response = await fetch(`${API_BASE_URL}/api/vanish`, {
         method: 'POST',
         body: formData,
       });
@@ -134,7 +138,7 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`https://vanishink-snippets.onrender.com/api/vanish/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/vanish/${id}`);
       if (response.ok) {
         const data = await response.json();
         setVanishData(data);
