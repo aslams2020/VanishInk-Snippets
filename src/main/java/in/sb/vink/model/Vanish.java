@@ -46,9 +46,11 @@ public class Vanish {
 //    @Column(name = "content_type")
 //    private ContentType contentType = ContentType.TEXT; // Default to TEXT
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "content_type", length = 10)
-    private String contentType = "TEXT";
-    @Column(name = "file_url")
+    private ContentType contentType = ContentType.TEXT;
+
+	@Column(name = "file_url")
     private String fileUrl; 
 
 
