@@ -104,7 +104,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/vanish', {
+      const response = await fetch('https://vanishink-snippets.onrender.com/api/vanish', {
         method: 'POST',
         body: formData,
       });
@@ -134,7 +134,7 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:8080/api/vanish/${id}`);
+      const response = await fetch(`https://vanishink-snippets.onrender.com/api/vanish/${id}`);
       if (response.ok) {
         const data = await response.json();
         setVanishData(data);
