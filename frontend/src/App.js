@@ -19,6 +19,9 @@ function App() {
   const [file, setFile] = useState(null);
   const [isOneTime, setIsOneTime] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [isCustomExpiry, setIsCustomExpiry] = useState(false);
+  const [customTimeValue, setCustomTimeValue] = useState(1);
+  const [customTimeUnit, setCustomTimeUnit] = useState('hours');
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -43,14 +46,53 @@ function App() {
     }
   };
 
+  const handleExpiryChange = (e) => {
+    const value = e.target.value;
+    setExpiryTime(value);
+    setIsCustomExpiry(value === 'custom');
+  };
+
+  // to handle custom time
+  const prepareExpiryTime = () => {
+    if (expiryTime === 'custom') {
+      return `${customTimeValue}${customTimeUnit.charAt(0)}`;
+    }
+    return expiryTime;
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate custom time
+    if (isCustomExpiry) {
+      if (customTimeValue < 1) {
+        setError('Duration must be at least 1');
+        setLoading(false);
+        return;
+      }
+
+      // Set reasonable limits
+      const maxValues = {
+        minutes: 525600, // 1 year in minutes
+        hours: 8760,     // 1 year in hours
+        days: 365,       // 1 year
+        weeks: 52        // 1 year
+      };
+
+      if (customTimeValue > maxValues[customTimeUnit]) {
+        setError(`Duration cannot exceed 1 year for ${customTimeUnit}`);
+        setLoading(false);
+        return;
+      }
+    }
     setLoading(true);
     setError('');
 
+    const finalExpiryTime = prepareExpiryTime();
+
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('expiryTime', expiryTime);
+    formData.append('expiryTime', finalExpiryTime);
     formData.append('isOneTime', isOneTime);
 
     if (file) {
@@ -124,7 +166,7 @@ function App() {
 
       <nav className="navbar">
         <div className="nav-brand">
-         <a href="/" className='logo-left'><h2>VanishInk</h2></a>
+          <a href="/" className='logo-left'><h2>VanishInk</h2></a>
         </div>
         <div className="nav-links">
           <a href="https://github.com/aslams2020/VanishInk-Snippets" target="_blank" rel="noopener noreferrer">
@@ -206,14 +248,46 @@ function App() {
                     id="expiryTime"
                     className="form-select"
                     value={expiryTime}
-                    onChange={(e) => setExpiryTime(e.target.value)}
+                    onChange={handleExpiryChange}
                   >
                     <option value="1h">1 Hour</option>
                     <option value="1d">1 Day</option>
                     <option value="1w">1 Week</option>
+                    <option value="custom">Custom...</option>
                     <option value="never">Never</option>
                   </select>
                 </div>
+
+                {isCustomExpiry && (
+                  <div className="custom-time-container">
+                    <div className="form-group">
+                      <label htmlFor="customTimeValue" className="form-label">Duration</label>
+                      <input
+                        id="customTimeValue"
+                        type="number"
+                        min="1"
+                        max="999"
+                        className="form-input"
+                        value={customTimeValue}
+                        onChange={(e) => setCustomTimeValue(parseInt(e.target.value) || 1)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="customTimeUnit" className="form-label">Unit</label>
+                      <select
+                        id="customTimeUnit"
+                        className="form-select"
+                        value={customTimeUnit}
+                        onChange={(e) => setCustomTimeUnit(e.target.value)}
+                      >
+                        <option value="minutes">Minutes</option>
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
 
                 <button type="submit" className="create-btn" disabled={loading}>
                   {loading ? 'Creating...' : 'Create Vanish Link'}
