@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
+@Transactional
 public class VanishService {
 
     @Autowired
@@ -26,12 +27,15 @@ public class VanishService {
     }
 
     @Scheduled(cron = "0 0 2 * * ?") // Run every day at 2 AM
+    @Transactional
     public void cleanupExpiredVanishes() {
         System.out.println("Running scheduled task: Cleaning up expired vanishes...");
         try {
             vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());
+            System.out.println("Cleanup completed successfully.");
         } catch (Exception e) {
             System.err.println("Error during cleanup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
