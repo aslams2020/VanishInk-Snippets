@@ -11,6 +11,7 @@ function App() {
   const [vanishId, setVanishId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [copied, setCopied] = useState(false);
   const [expiryTime, setExpiryTime] = useState('1h');
   const [createdUrl, setCreatedUrl] = useState('');
   const [vanishData, setVanishData] = useState(null);
@@ -22,6 +23,7 @@ function App() {
   const [isCustomExpiry, setIsCustomExpiry] = useState(false);
   const [customTimeValue, setCustomTimeValue] = useState(1);
   const [customTimeUnit, setCustomTimeUnit] = useState('hours');
+
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -151,6 +153,33 @@ function App() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(createdUrl);
     alert('URL copied to clipboard!');
+  };
+
+  const copyContentToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      } catch (fallbackErr) {
+        console.error('Failed to copy content: ', fallbackErr);
+        alert('Failed to copy content to clipboard');
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -374,13 +403,22 @@ function App() {
                   {/* TEXT Content */}
                   {(!vanishData.contentType || vanishData.contentType === 'TEXT') && (
                     <div className="text-content">
-                      <SyntaxHighlighter
-                        language="java"
-                        style={vscDarkPlus}
-                        customStyle={{ borderRadius: '8px', padding: '20px' }}
-                      >
-                        {vanishData.content}
-                      </SyntaxHighlighter>
+                      <div className="syntax-highlighter-wrapper">
+                        <button
+                          onClick={() => copyContentToClipboard(vanishData.content)}
+                          className="copy-inline-btn"
+                          title="Copy content to clipboard"
+                        >
+                          {copied ? 'Copied!' : <FaCopy />}
+                        </button>
+                        <SyntaxHighlighter
+                          language="java"
+                          style={vscDarkPlus}
+                          customStyle={{ borderRadius: '8px', padding: '20px' }}
+                        >
+                          {vanishData.content}
+                        </SyntaxHighlighter>
+                      </div>
                     </div>
                   )}
 
