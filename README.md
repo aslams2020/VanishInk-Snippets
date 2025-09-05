@@ -87,4 +87,15 @@ npm run dev
 ```
 
 
-<!--H2 DATABASE - jdbc:h2:mem:testdb -->
+<!--H2 DATABASE - jdbc:h2:mem:testdb 
+
+Layer 1: Logical Expiration (Immediate)
+✅ Frontend shows "expired" message
+✅ API returns 404 for expired content
+✅ Users can't access expired vanishes
+
+Layer 2: Physical Cleanup (Scheduled) => 2 am
+✅ Actually removes the database records
+✅ Frees up storage space
+✅ Maintains database performance
+-->
