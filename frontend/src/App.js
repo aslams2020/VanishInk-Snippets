@@ -323,9 +323,10 @@ function App() {
                 )}
 
                 <button type="submit" className="create-btn" disabled={loading}>
-                  {loading ? 'Creating...' : 'Create Vanish Link'}
+                  {loading ? 'Generating...' : 'Generate Vanish Link ✨'}
                 </button>
               </div>
+
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -337,7 +338,7 @@ function App() {
                   <span className="checkmark"></span>
                   Burn after reading (One-Time Link)?
                 </label>
-                <p className="checkbox-description">(Note: This vanish will be destroyed immediately after being viewed once.)</p>
+                <p className="checkbox-description">(Note: If Enabled,<strong>  This vanish will be destroyed immediately </strong> after being viewed once.)</p>
               </div>
 
             </form>
