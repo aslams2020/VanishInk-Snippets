@@ -11,20 +11,21 @@ Frontend (React) → Backend (Spring Boot) → Database (MySQL)
 ``` 
 ## ✨ Features  
 
-### Core Functionality ⚡
+### Core Functionality🔥
 - **Instant Sharing**: Generate unique, shareable links with one click
 - **Multiple Content Types**: Support for text, code, images, and files
 - **Smart Expiration**: Automatically deletes content after configurable durations
 - **One-Time Links**: "Burn after reading" option for sensitive information
 
-### User Experience
+### User Experience🍀
 - **QR Code Generation**: Quick mobile sharing with generated QR codes
 - **Responsive Design**
 - **Copy Functionality**: One-click copy for both links and content
 - **Syntax Highlighting**: Beautifully formatted code with language detection
 
-### ⚡ Advanced Features
+### Advanced Features⚡ 
 - **Multiple File Upload**: Upload and share multiple files simultaneously
+- **File Management:** Intuitive interface for adding/removing files before submission
 - **Custom Expiration Times**: Flexible duration settings (minutes, hours, days, weeks)
 - **Real-time Validation**: Client and server-side input validation
 - **Automatic Cleanup**: Scheduled database maintenance
@@ -94,6 +95,7 @@ Runs daily at 2 AM to remove expired content
 
 <!-- 
 MY SECURITY NOTES: 
+
 - Database credentials should never be committed to version control - Cloudinary API secrets must be kept confidential - Always use HTTPS in production environments - Consider implementing rate limiting for production use DEPLOYMENT SECRETS: - SPRING_DATASOURCE_USERNAME=vanisink_user - SPRING_DATASOURCE_PASSWORD=complex_password_123 - CLOUDINARY_CLOUD_NAME=your_cloud_name - CLOUDINARY_API_KEY=123456789012345 - CLOUDINARY_API_SECRET=secret_key_abcdefg 
 
 SCHEDULED TASK: - cleanupExpiredVanishes() runs daily at 2 AM ITC 
