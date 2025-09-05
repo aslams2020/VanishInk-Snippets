@@ -1,4 +1,4 @@
-# VanishInk 
+# Vanish-Ink 
 
 _A full-stack service for sharing code snippets, text, and files that automatically vanish after a set period._
 
