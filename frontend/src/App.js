@@ -28,7 +28,9 @@ function App() {
   const [isCustomExpiry, setIsCustomExpiry] = useState(false);
   const [customTimeValue, setCustomTimeValue] = useState(1);
   const [customTimeUnit, setCustomTimeUnit] = useState('hours');
-
+  const [showServerNotice, setShowServerNotice] = useState(true);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [noticeText, setNoticeText] = useState("");
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -42,6 +44,22 @@ function App() {
     } else {
       setView('create');
     }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setNoticeText("Hosted on Render: First requests may take 30-60 seconds. Thank you for your patience!");
+      } else {
+        setNoticeText("Hosted on Render's free tier: First requests may take 30-60 seconds to wake up the server. Thank you for your patience!");
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const navigateTo = (path) => {
@@ -245,8 +263,28 @@ function App() {
               <h1>Share Code. Vanish Forever.</h1>
               <p>Create secure, temporary links for your code snippets that automatically disappear.</p>
             </div>
+            {showServerNotice && (
+              <div className="server-notice-banner">
+                <div className="server-notice-banner-content">
+                  {/* <span>⚠️</span> */}
+                  <p>
+                    <div> <strong>⚡Server Notice :)</strong> </div>
+                    → Hosted on <strong>Render's free tier. </strong>
+                    First request may take 30-60 seconds to wake up the server.
+                    Thank you for your understanding! 🙌
+                  </p>
+                  <button
+                    onClick={() => setShowServerNotice(false)}
+                    className="server-notice-banner-close"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="create-form">
               <div className="form-group">
+
                 <label htmlFor="title" className="form-label">Title</label>
                 <input
                   id="title"
@@ -266,7 +304,7 @@ function App() {
                     type="file"
                     id="files"
                     multiple
-                    onChange={addMoreFiles}  
+                    onChange={addMoreFiles}
                     className="file-input"
                   />
                   <label htmlFor="files" className="file-input-label">
