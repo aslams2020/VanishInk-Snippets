@@ -92,22 +92,12 @@ Runs daily at 2 AM to remove expired content
 
 ---
 
-## 🔧 Installation & Setup  
+<!-- 
+MY SECURITY NOTES: 
+- Database credentials should never be committed to version control - Cloudinary API secrets must be kept confidential - Always use HTTPS in production environments - Consider implementing rate limiting for production use DEPLOYMENT SECRETS: - SPRING_DATASOURCE_USERNAME=vanisink_user - SPRING_DATASOURCE_PASSWORD=complex_password_123 - CLOUDINARY_CLOUD_NAME=your_cloud_name - CLOUDINARY_API_KEY=123456789012345 - CLOUDINARY_API_SECRET=secret_key_abcdefg 
 
-### Backend (Spring Boot + MySQL)
-```bash
-# Clone repository
-git clone https://github.com/aslams2020/vanishink-snippets.git
-
-# Configure application.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/vanishink_db
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-
-# Cloudinary configuration
-cloudinary.cloud-name=your_cloud_name
-cloudinary.api-key=your_api_key
-cloudinary.api-secret=your_api_secret
-
-# Run application
-mvn spring-boot:run
+SCHEDULED TASK: - cleanupExpiredVanishes() runs daily at 2 AM ITC 
+                - Removes both database records and Cloudinary files 
+                - Maintains database performance and reduces storage costs 
+                
+-->
