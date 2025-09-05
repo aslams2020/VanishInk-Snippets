@@ -7,7 +7,7 @@
 
 body {
   /* background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ec 100%); */
-  background: linear-gradient(135deg, #f5f5fa 0%, #cda7ff 100%);
+  background: linear-gradient(135deg, #eaeaff 0%, #df87ff 100%);
   color: #2d3748;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
   min-height: 100vh;
@@ -23,7 +23,7 @@ body {
 /* Navigation Bar */
 .navbar {
   /* background: rgba(255, 255, 255, 0.95); */
-  background: #f5e5fef2;
+  background: #f1dcfdf2;
   backdrop-filter: blur(10px);
   padding: 0.5rem 2rem;
   display: flex;
@@ -78,6 +78,217 @@ body {
 
 .nav-span:hover {
   color: #322ac7;
+}
+
+.server-notice-banner {
+  /* background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); */
+  background: linear-gradient(135deg, #778def 0%, #7c4bad 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  position: relative;
+}
+
+.server-notice-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.server-notice-banner-content p {
+  margin: 0;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.server-notice-banner-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.server-notice-banner-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.server-notice-banner {
+  background: linear-gradient(135deg, #778def 0%, #7c4bad 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  position: relative;
+}
+
+.server-notice-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+.server-notice-banner-content p {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.server-notice-banner-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease;
+}
+
+.server-notice-banner-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .server-notice-banner {
+    padding: 0.6rem 0.8rem;
+    margin: 0.8rem 0;
+    border-radius: 6px;
+  }
+  
+  .server-notice-banner-content {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .server-notice-banner-content p {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  
+  .server-notice-banner-close {
+    width: 20px;
+    height: 20px;
+    font-size: 1.1rem;
+    margin-top: 0.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .server-notice-banner {
+    padding: 0.5rem 0.6rem;
+    margin: 0.5rem 0;
+  }
+  
+  .server-notice-banner-content {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  
+  .server-notice-banner-content p {
+    font-size: 0.75rem;
+    order: 2; 
+    width: 100%;
+  }
+  
+  .server-notice-banner-close {
+    order: 1; 
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 320px) {
+  .server-notice-banner {
+    padding: 0.4rem 0.5rem;
+  }
+  
+  .server-notice-banner-content p {
+    font-size: 0.7rem;
+  }
+  
+  .server-notice-banner-close {
+    width: 18px;
+    height: 18px;
+    font-size: 1rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.server-notice-banner {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+
+@media (max-width: 480px) {
+  .server-notice-banner-content::before {
+    font-size: 1rem;
+  }
 }
 
 .main-container {
