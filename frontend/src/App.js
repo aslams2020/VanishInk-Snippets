@@ -6,8 +6,8 @@ import { QRCodeSVG } from 'qrcode.react';
 import About from './components/About';
 import './App.css';
 
-const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:8080' 
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
   : 'https://vanishink-snippets.onrender.com';
 
 function App() {
@@ -21,7 +21,8 @@ function App() {
   const [vanishData, setVanishData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [file, setFile] = useState(null);
+  // const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [isOneTime, setIsOneTime] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [isCustomExpiry, setIsCustomExpiry] = useState(false);
@@ -69,7 +70,9 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate custom time
+    setLoading(true);
+    setError('');
+
     if (isCustomExpiry) {
       if (customTimeValue < 1) {
         setError('Duration must be at least 1');
@@ -77,7 +80,6 @@ function App() {
         return;
       }
 
-      // Set reasonable limits
       const maxValues = {
         minutes: 525600, // 1 year in minutes
         hours: 8760,     // 1 year in hours
@@ -91,8 +93,6 @@ function App() {
         return;
       }
     }
-    setLoading(true);
-    setError('');
 
     const finalExpiryTime = prepareExpiryTime();
 
@@ -101,8 +101,10 @@ function App() {
     formData.append('expiryTime', finalExpiryTime);
     formData.append('isOneTime', isOneTime);
 
-    if (file) {
-      formData.append('file', file); // Append the file
+    if (files.length > 0) {
+      files.forEach((file) => {
+        formData.append('file', file);
+      });
     } else {
       formData.append('content', content); // Append text content
     }
@@ -123,7 +125,7 @@ function App() {
         setTitle('');
         setContent('');
         setExpiryTime('1h');
-        setFile(null);
+        setFiles([]);
       } else {
         setError('Failed to create the Vanish.');
       }
@@ -133,6 +135,10 @@ function App() {
       setLoading(false);
     }
   };
+
+  const clearFiles = () => {
+    setFiles([]);
+  }
 
   const fetchVanish = async (id) => {
     setLoading(true);
@@ -187,10 +193,10 @@ function App() {
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    if (selectedFile) {
-      setContent(''); // Clear text content when file is selected
+    const selectedFiles = Array.from(e.target.files);
+    setFiles(selectedFiles);
+    if (selectedFiles.length > 0) {
+      setContent('');
     }
   };
 
@@ -230,6 +236,7 @@ function App() {
                   id="title"
                   type="text"
                   className="form-input"
+                  required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Add a title to Vanish"
@@ -237,32 +244,44 @@ function App() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="file" className="form-label">Upload a File/Image</label>
+                <label htmlFor="files" className="form-label">Upload Files/Images</label>
                 <div className="file-input-container">
                   <input
                     type="file"
-                    id="file"
+                    id="files"
+                    multiple
                     onChange={handleFileChange}
                     className="file-input"
                   />
-                  <label htmlFor="file" className="file-input-label">
+                  <label htmlFor="files" className="file-input-label">
                     <FaFileAlt className="file-input-icon" />
-                    {file ? file.name : 'Choose a file'}
+                    {files.length > 0 ? `${files.length} file(s) selected` : 'Choose files'}
                   </label>
                 </div>
-                {file && (
-                  <button
-                    type="button"
-                    className="clear-file-btn"
-                    onClick={() => setFile(null)}
-                  >
-                    Remove File
-                  </button>
+                {files.length > 0 && (
+                  <div className="selected-files">
+                    <h4>Selected Files:</h4>
+                    <ul>
+                      {files.map((file, index) => (
+                        <li key={index}>
+                          {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      type="button"
+                      className="clear-file-btn"
+                      onClick={clearFiles}
+                    >
+                      Remove All Files
+                    </button>
+                  </div>
                 )}
               </div>
-              {!file && (
+
+              {!(files.length > 0) && (
                 <div className="form-group">
-                  <label htmlFor="content" className="form-label">Or Content</label>
+                  <label htmlFor="content" className="form-label">Or Text Content</label>
                   <textarea
                     id="content"
                     className="form-textarea"
@@ -450,32 +469,68 @@ function App() {
                   )}
 
                   {/* FILE Content */}
-                  {vanishData.contentType === 'FILE' && (
-                    <div className="file-content">
-                      <div className="file-info">
-                        <FaFile className="file-icon" />
-                        <div className="file-details">
-                          <h3>{vanishData.originalFileName || 'Download File'}</h3>
-                          <p>File shared via VanishInk</p>
+                  {(vanishData.contentType === 'FILE' || vanishData.contentType === 'IMAGE') && (
+                    <div className="files-content">
+                      {vanishData.files && vanishData.files.length > 0 ? (
+                        <>
+                          <h3>Files ({vanishData.files.length})</h3>
+                          {vanishData.files.map((file, index) => (
+                            <div key={index} className="file-item">
+                              <div className="file-info">
+                                <FaFile className="file-icon" />
+                                <div className="file-details">
+                                  <h4>{file.originalFileName || `File ${index + 1}`}</h4>
+                                  <p>{(file.fileSize / 1024).toFixed(2)} KB</p>
+                                </div>
+                              </div>
+                              <div className="content-actions">
+                                <a
+                                  href={file.fileUrl}
+                                  download={file.originalFileName}
+                                  className="action-btn primary"
+                                >
+                                  <FaDownload /> Download
+                                </a>
+                                <a
+                                  href={file.fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="action-btn secondary"
+                                >
+                                  <FaExternalLinkAlt /> Open
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="file-item">
+                          <div className="file-info">
+                            <FaFile className="file-icon" />
+                            <div className="file-details">
+                              <h4>{vanishData.title || 'Download File'}</h4>
+                              <p>File shared via VanishInk</p>
+                            </div>
+                          </div>
+                          <div className="content-actions">
+                            <a
+                              href={vanishData.fileUrl}
+                              download={vanishData.title}
+                              className="action-btn primary"
+                            >
+                              <FaDownload /> Download File
+                            </a>
+                            <a
+                              href={vanishData.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="action-btn secondary"
+                            >
+                              <FaExternalLinkAlt /> Open in New Tab
+                            </a>
+                          </div>
                         </div>
-                      </div>
-                      <div className="content-actions">
-                        <a
-                          href={vanishData.fileUrl}
-                          download
-                          className="action-btn primary"
-                        >
-                          <FaDownload /> Download File
-                        </a>
-                        <a
-                          href={vanishData.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="action-btn secondary"
-                        >
-                          <FaExternalLinkAlt /> Open in New Tab
-                        </a>
-                      </div>
+                      )}
                     </div>
                   )}
                 </div>
