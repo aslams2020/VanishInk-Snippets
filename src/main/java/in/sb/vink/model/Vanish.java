@@ -1,15 +1,20 @@
 package in.sb.vink.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -24,7 +29,7 @@ public class Vanish {
 	@Column(name = "vanish_id", unique = true, nullable = false, updatable = false)
 	private String vanishId;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String content;
 
 	private String title;
@@ -52,9 +57,13 @@ public class Vanish {
 
 	@Column(name = "file_url")
     private String fileUrl; 
+    
+	// handling multiple files.
+	@OneToMany(mappedBy = "vanish", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<FileMetadata> files;
+	    
 
-
-    public Long getId() {
+	public Long getId() {
         return id;
     }
     public void setId(Long id) {
@@ -103,7 +112,7 @@ public class Vanish {
 	public void setFileUrl(String fileUrl) {
 		this.fileUrl = fileUrl;
 	}
-	
+
 	public Boolean getIsOneTime() {
         return isOneTime;
     }
@@ -111,6 +120,24 @@ public class Vanish {
     public void setIsOneTime(Boolean isOneTime) {
         this.isOneTime = isOneTime;
     }
+    
+    //multiplefiles
+    public List<FileMetadata> getFiles() { return files; }
+    public void setFiles(List<FileMetadata> files) { 
+        this.files = files;
+        if (files != null) {
+            for (FileMetadata file : files) {
+                file.setVanish(this);
+            }
+        }
+    }
+    
+    // to add files
+    public void addFile(FileMetadata file) {
+        files.add(file);
+        file.setVanish(this);
+    }
+
     
 	// () runs to set the createdAt time and generate the unique vanishId.
     // Right before a new Vanish object is saved for the first time...
@@ -123,4 +150,5 @@ public class Vanish {
         }
 
     }
+    
 }
