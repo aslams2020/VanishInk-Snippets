@@ -266,10 +266,9 @@ function App() {
             {showServerNotice && (
               <div className="server-notice-banner">
                 <div className="server-notice-banner-content">
-                  {/* <span>⚠️</span> */}
                   <p>
                     <div> <strong>⚡Server Notice :)</strong> </div>
-                    → Hosted on <strong>Render's free tier. </strong>
+                    Hosted on <strong>Render's free tier. </strong>
                     First request may take 30-60 seconds to wake up the server.
                     Thank you for your understanding! 🙌
                   </p>
