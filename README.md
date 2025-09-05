@@ -86,3 +86,5 @@ npm install
 npm run dev
 ```
 
+
+<!--H2 DATABASE - jdbc:h2:mem:testdb -->
