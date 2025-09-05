@@ -17,6 +17,9 @@ public interface VanishRepository extends JpaRepository<Vanish, Long> {
     @Query(value = "SELECT * FROM vanish v WHERE v.vanish_id = :vanishId", nativeQuery = true)
     Optional<Vanish> findByVanishId(@Param("vanishId") String vanishId);
 
+    @Query("SELECT v FROM Vanish v LEFT JOIN FETCH v.files WHERE v.vanishId = :vanishId")
+    Optional<Vanish> findByVanishIdWithFiles(@Param("vanishId") String vanishId);
+
     // used by the scheduler to delete expired Vanishes..
     void deleteByExpiresAtBefore(LocalDateTime currentTime);
 }
