@@ -46,22 +46,6 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setNoticeText("Hosted on Render: First requests may take 30-60 seconds. Thank you for your patience!");
-      } else {
-        setNoticeText("Hosted on Render's free tier: First requests may take 30-60 seconds to wake up the server. Thank you for your patience!");
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const navigateTo = (path) => {
     window.history.pushState({}, '', path);
     if (path === '/about') {
@@ -268,7 +252,7 @@ function App() {
                 <div className="server-notice-banner-content">
                   <p>
                     <div> <strong>⚡Server Notice :)</strong> </div>
-                    Hosted on <strong>Render's free tier. </strong>
+                    I Hosted this on <strong>Render's free tier. </strong>
                     First request may take 30-60 seconds to wake up the server.
                     Thank you for your understanding! 🙌
                   </p>
