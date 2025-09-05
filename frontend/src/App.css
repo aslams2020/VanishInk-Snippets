@@ -490,6 +490,79 @@ body {
   margin: 0;
 }
 
+/* Selected Files List */
+.selected-files {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.selected-files h4 {
+  margin-bottom: 0.5rem;
+  color: #4F46E5;
+}
+
+.selected-files ul {
+  list-style-type: none;
+  margin-bottom: 1rem;
+}
+
+.selected-files li {
+  padding: 0.5rem;
+  background: white;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+/* Files Content */
+.files-content {
+  padding: 1rem 0;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: #F8FAFC;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-details h4 {
+  color: #2D3748;
+  margin-bottom: 0.25rem;
+}
+
+.file-details p {
+  color: #64748B;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .content-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 /* Content Actions */
 .content-actions {
   display: flex;
