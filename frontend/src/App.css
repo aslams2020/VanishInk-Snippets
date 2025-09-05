@@ -563,6 +563,74 @@ body {
   }
 }
 
+/* Enhanced File List Styles */
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: white;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.remove-file-btn {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.remove-file-btn:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+}
+
+/* Update the clear file button */
+.clear-file-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.clear-file-btn:hover {
+  background: #fee2e2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .remove-file-btn {
+    align-self: flex-end;
+  }
+}
+
 /* Content Actions */
 .content-actions {
   display: flex;

@@ -198,6 +198,22 @@ function App() {
     if (selectedFiles.length > 0) {
       setContent('');
     }
+    e.target.value = '';
+  };
+
+  // individual file removal
+  const removeFile = (indexToRemove) => {
+    setFiles(files.filter((_, index) => index !== indexToRemove));
+  };
+
+  // adding more files
+  const addMoreFiles = (e) => {
+    const newFiles = Array.from(e.target.files);
+    if (newFiles.length > 0) {
+      setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      setContent('');
+    }
+    e.target.value = '';
   };
 
   return (
@@ -250,21 +266,31 @@ function App() {
                     type="file"
                     id="files"
                     multiple
-                    onChange={handleFileChange}
+                    onChange={addMoreFiles}  
                     className="file-input"
                   />
                   <label htmlFor="files" className="file-input-label">
                     <FaFileAlt className="file-input-icon" />
-                    {files.length > 0 ? `${files.length} file(s) selected` : 'Choose files'}
+                    {files.length > 0 ? `Add more files (${files.length} selected)` : 'Choose files'}
                   </label>
                 </div>
                 {files.length > 0 && (
                   <div className="selected-files">
-                    <h4>Selected Files:</h4>
+                    <h4>Selected Files ({files.length}):</h4>
                     <ul>
                       {files.map((file, index) => (
-                        <li key={index}>
-                          {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                        <li key={index} className="file-item">
+                          <span className="file-name">
+                            {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                          </span>
+                          <button
+                            type="button"
+                            className="remove-file-btn"
+                            onClick={() => removeFile(index)}
+                            title="Remove this file"
+                          >
+                            ×
+                          </button>
                         </li>
                       ))}
                     </ul>
