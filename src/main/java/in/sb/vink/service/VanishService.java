@@ -22,8 +22,12 @@ public class VanishService {
         return vanishRepository.save(vanish);
     }
 
+//    public Optional<Vanish> getVanishByVanishId(String vanishId) {
+//        return vanishRepository.findByVanishId(vanishId);
+//    }
     public Optional<Vanish> getVanishByVanishId(String vanishId) {
-        return vanishRepository.findByVanishId(vanishId);
+        // Use the method that fetches files too
+        return vanishRepository.findByVanishIdWithFiles(vanishId);
     }
 
     @Scheduled(cron = "0 0 2 * * ?") // Run every day at 2 AM
