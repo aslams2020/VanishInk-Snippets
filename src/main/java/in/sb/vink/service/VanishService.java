@@ -35,7 +35,7 @@ public class VanishService {
     public void cleanupExpiredVanishes() {
         System.out.println("Running scheduled task: Cleaning up expired vanishes...");
         try {
-            vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());
+            vanishRepository.deleteByExpiresAtBefore(LocalDateTime.now());   // DELETE FROM vanish WHERE expires_at < NOW()
             System.out.println("Cleanup completed successfully.");
         } catch (Exception e) {
             System.err.println("Error during cleanup: " + e.getMessage());
