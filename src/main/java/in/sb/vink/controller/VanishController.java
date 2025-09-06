@@ -128,6 +128,8 @@ public class VanishController {
         }
     }
     
+    
+    
     @GetMapping("/{vanishId}")
     public ResponseEntity<?> getVanishById(@PathVariable String vanishId) {
         Optional<Vanish> vanishOpt = vanishService.getVanishByVanishId(vanishId);
@@ -142,15 +144,6 @@ public class VanishController {
         if (vanish.getExpiresAt() != null && vanish.getExpiresAt().isBefore(LocalDateTime.now())) {
             vanishService.deleteVanishById(vanish.getId());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // Check if it's a one-time paste
-        if (Boolean.TRUE.equals(vanish.getIsOneTime())) {
-            try {
-                vanishService.deleteVanishById(vanish.getId());
-            } catch (Exception e) {
-                System.err.println("Error deleting one-time vanish: " + e.getMessage());
-            }
         }
 
         Map<String, Object> response = new HashMap<>();
@@ -186,6 +179,26 @@ public class VanishController {
                 }
             }
         }
+        
+	        if (Boolean.TRUE.equals(vanish.getIsOneTime())) {
+	            try {
+	                new Thread(() -> {
+	                	try {
+	                        Thread.sleep(1000); 
+	                        try {
+	                            vanishService.deleteVanishById(vanish.getId());
+	                            System.out.println("✓ One-time vanish deleted: " + vanishId);
+	                        } catch (Exception deleteError) {
+	                            System.out.println("✓ Vanish already removed (normal): " + vanishId);
+	                        }
+	                    } catch (InterruptedException e) {
+	                        Thread.currentThread().interrupt();
+	                    }
+	                }).start();
+	            } catch (Exception e) {
+	                System.err.println("Error scheduling deletion: " + e.getMessage());
+	            }
+	        }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
