@@ -129,10 +129,10 @@ function App() {
         setExpiryTime('1h');
         setFiles([]);
       } else {
-        setError('Failed to create the Vanish.');
+        setError('❌ Failed to create the Vanish.');
       }
     } catch (err) {
-      setError('An error occurred. Is the backend server running?');
+      setError('⚠️ An error occurred. Is the backend server running?');
     } finally {
       setLoading(false);
     }
@@ -245,7 +245,7 @@ function App() {
           <div className="create-container">
             <div className="hero-section">
               <h1>Share Code. Vanish Forever.</h1>
-              <p>Create secure, temporary links for your code snippets that automatically disappear.</p>
+              <p>Create secure, temporary links for your code snippets & multiple files that automatically disappear.</p>
             </div>
             {showServerNotice && (
               <div className="server-notice-banner">
