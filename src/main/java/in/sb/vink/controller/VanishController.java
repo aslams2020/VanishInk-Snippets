@@ -33,6 +33,8 @@ public class VanishController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(VanishController.class);
 
+	private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+	
     @Autowired
     private VanishService vanishService;
     
@@ -48,8 +50,15 @@ public class VanishController {
             @RequestParam(value = "file", required = false) MultipartFile[] files) {
 
         try {
-//        	logger.info("Creating new vanish with title: {}", title);
-//            logger.info("Files received: {}", files != null ? files.length : 0);
+        	
+        	if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    if (file.getSize() > MAX_FILE_SIZE) {
+                        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                                .body(null);
+                    }
+                }
+            }
             Vanish vanish = new Vanish();
             vanish.setTitle(title); 
             vanish.setIsOneTime(Boolean.TRUE.equals(isOneTime)); 
