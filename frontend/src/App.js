@@ -75,6 +75,11 @@ function App() {
     setLoading(true);
     setError('');
 
+    if (files.length > 0 && !validateFiles(files)) {
+      setLoading(false);
+      return;
+    }
+
     if (isCustomExpiry) {
       if (customTimeValue < 1) {
         setError('Duration must be at least 1');
@@ -117,7 +122,10 @@ function App() {
         body: formData,
       });
 
-      if (response.ok) {
+      if (response.status === 413) {
+        setError('File size too large. Maximum file size is 10MB.');
+      }
+      else if (response.ok) {
         const data = await response.json();
         const vanishId = data.url;
         const userFriendlyUrl = `${window.location.origin}/${vanishId}`;
@@ -194,24 +202,49 @@ function App() {
     }
   };
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
-    if (selectedFiles.length > 0) {
-      setContent('');
-    }
-    e.target.value = '';
-  };
+  //   const handleFileChange = (e) => {
+  //   const selectedFiles = Array.from(e.target.files);
+
+  //   if (selectedFiles.length > 0) {
+  //     if (!validateFiles(selectedFiles)) {
+  //       e.target.value = ''; 
+  //       return;
+  //     }
+
+  //     setFiles(selectedFiles);
+  //     setContent('');
+  //   }
+  //   e.target.value = ''; 
+  // };
 
   // individual file removal
   const removeFile = (indexToRemove) => {
     setFiles(files.filter((_, index) => index !== indexToRemove));
   };
 
+  const validateFiles = (files) => {
+    const maxSize = 10 * 1024 * 1024; // 10MB 
+    const tooLargeFiles = files.filter(file => file.size > maxSize);
+
+    if (tooLargeFiles.length > 0) {
+      const fileNames = tooLargeFiles.map(file => file.name).join(', ');
+      setError(`The following files exceed the 10MB limit: ${fileNames}. Please choose smaller files.`);
+      return false;
+    }
+
+    return true;
+  };
+
   // adding more files
   const addMoreFiles = (e) => {
     const newFiles = Array.from(e.target.files);
+
     if (newFiles.length > 0) {
+      if (!validateFiles(newFiles)) {
+        e.target.value = ''; // Clear the file input
+        return;
+      }
+
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
       setContent('');
     }
@@ -281,7 +314,10 @@ function App() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="files" className="form-label">Upload Files/Images</label>
+                <label htmlFor="files" className="form-label">
+                  Upload Files/Images
+                  {/* <span className="file-size-limit">(Max 10MB per file)</span> */}
+                </label>
                 <div className="file-input-container">
                   <input
                     type="file"
@@ -290,6 +326,9 @@ function App() {
                     onChange={addMoreFiles}
                     className="file-input"
                   />
+                  <p className="file-helper-text">
+                    (Maximum 10MB per file. Supported formats: images, documents, PDFs, etc.)
+                  </p>
                   <label htmlFor="files" className="file-input-label">
                     <FaFileAlt className="file-input-icon" />
                     {files.length > 0 ? `Add more files (${files.length} selected)` : 'Choose files'}
@@ -299,21 +338,27 @@ function App() {
                   <div className="selected-files">
                     <h4>Selected Files ({files.length}):</h4>
                     <ul>
-                      {files.map((file, index) => (
-                        <li key={index} className="file-item">
-                          <span className="file-name">
-                            {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                          </span>
-                          <button
-                            type="button"
-                            className="remove-file-btn"
-                            onClick={() => removeFile(index)}
-                            title="Remove this file"
-                          >
-                            ×
-                          </button>
-                        </li>
-                      ))}
+                      {files.map((file, index) => {
+                        const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                        const isTooLarge = file.size > 10 * 1024 * 1024;
+
+                        return (
+                          <li key={index} className={`file-item ${isTooLarge ? 'file-too-large' : ''}`}>
+                            <span className="file-name">
+                              {file.name} <span className="file-size">({fileSizeMB} MB)</span>
+                              {isTooLarge && <span className="size-warning"> ⚠️ Too large!</span>}
+                            </span>
+                            <button
+                              type="button"
+                              className="remove-file-btn"
+                              onClick={() => removeFile(index)}
+                              title="Remove this file"
+                            >
+                              ×
+                            </button>
+                          </li>
+                        );
+                      })}
                     </ul>
                     <button
                       type="button"
